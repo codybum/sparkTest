@@ -60,8 +60,12 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
         for (Tuple2<ImmutableBytesWritable, Result> test : javaPairRdd.take(10)) //or pairRdd.collect()
         {
             System.out.println(test._2);
+
+
             byte[] jbytes = test._2.getValue(Bytes.toBytes("json"), Bytes.toBytes("data"));
-            System.out.println(new String(jbytes));
+            String key = Bytes.toString(test._2.getRow());
+            System.out.println("Key: " + key);
+            System.out.println("Value: " + new String(jbytes));
         }
 
 
