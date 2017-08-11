@@ -111,6 +111,7 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
 */
         System.out.println("--------------------COUNT RDD " + rowPairRDD.count());
         System.out.println("--------------------Create DataFrame!");
+        //DataSet<Row> ssd = sqlContext.createDataset(rowPairRDD.values(), netFlow.class);
         DataFrame schemaRDD = sqlContext.createDataFrame(rowPairRDD.values(), netFlow.class);
         System.out.println("--------------------Loading Schema");
         schemaRDD.printSchema();
