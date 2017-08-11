@@ -58,9 +58,12 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
 
         for (Tuple2<ImmutableBytesWritable, Result> test : javaPairRdd.take(10)) //or pairRdd.collect()
         {
-            System.out.println(test._1);
             System.out.println(test._2);
+            byte[] jbytes = test._2.current().getValueArray();
+            System.out.println(new String(jbytes));
         }
+
+
 
         //List ls = javaPairRdd.collect();
         //javaPairRdd.
