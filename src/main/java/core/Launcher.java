@@ -1,5 +1,7 @@
 package core;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Result;
@@ -10,15 +12,19 @@ import org.apache.hadoop.hbase.spark.JavaHBaseContext;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.spark.api.java.*;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.sql.DataFrame;
+import org.apache.spark.sql.SQLContext;
 import scala.Tuple2;
-
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 
 public class Launcher {
 
-
+    private static Gson gson;
 	public static void main(String[] args) throws Exception 
 	{
-
+        gson = new GsonBuilder().create();
 
 	    /*
 	    Configuration conf = HBaseConfiguration.create();
@@ -34,13 +40,17 @@ JavaRDD<Tuple2<byte[], List<Tuple3<byte[], byte[], byte[]>>>> hbaseRdd = hbaseCo
 System.out.println("Number of Records found : " + hBaseRDD.count())
 	     */
 
-        String logFile = "test.txt"; // Should be some file on your system
+        //String logFile = "test.txt"; // Should be some file on your system
         SparkConf conf = new SparkConf().setAppName("Simple Application");
+
+
 
         JavaSparkContext jsc = new JavaSparkContext(conf);
 
         Scan scan = new Scan();
         scan.setCaching(100);
+
+
 
         //JavaRDD<Tuple2<byte[], List<Tuple3<byte[], byte[], byte[]>>>> hbaseRdd = hbaseContext.hbaseRDD(tableName, scan);
 
@@ -51,22 +61,55 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
         hbaseConf.set("hbase.cluster.distributed", "true");  // Here we are running zookeeper locally
         hbaseConf.set("hbase.rootdir", "hdfs://bdm00.uky.edu:8020/hbase");  // Here we are running zookeeper locally
 
+        System.out.println("--------------------SET TABLES!");
+
         hbaseConf.set(TableInputFormat.INPUT_TABLE, "netflow");
         JavaHBaseContext hbaseContext = new JavaHBaseContext(jsc, hbaseConf);
 
+        SQLContext sqlContext = new SQLContext(jsc);
 
+        System.out.println("--------------------Creating hbase rdd!");
         JavaPairRDD<ImmutableBytesWritable, Result> javaPairRdd = jsc.newAPIHadoopRDD(hbaseConf, TableInputFormat.class,ImmutableBytesWritable.class, Result.class);
 
+
+        // in the rowPairRDD the key is hbase's row key, The Row is the hbase's Row data
+        JavaPairRDD<String, netFlow> rowPairRDD = javaPairRdd.mapToPair(
+                new PairFunction<Tuple2<ImmutableBytesWritable, Result>, String, netFlow>() {
+                    @Override
+                    public Tuple2<String, netFlow> call(
+                            Tuple2<ImmutableBytesWritable, Result> entry) throws Exception {
+
+                        //System.out.println("--------------------Getting ID!");
+                        Result r = entry._2;
+                        String keyRow = Bytes.toString(r.getRow());
+
+                        //System.out.println("--------------------Define JavaBean!");
+                        netFlow flow = gson.fromJson(new String(r.getValue(Bytes.toBytes("json"), Bytes.toBytes("data"))), netFlow.class);
+                        return new Tuple2<String, netFlow>(keyRow, flow);
+                    }
+                });
+
+        System.out.println("--------------------COUNT RDD " + rowPairRDD.count());
+        System.out.println("--------------------Create DataFrame!");
+        DataFrame schemaRDD = sqlContext.createDataFrame(rowPairRDD.values(), netFlow.class);
+        System.out.println("--------------------Loading Schema");
+        schemaRDD.printSchema();
+        System.out.println("--------------------COUNT Schema " + schemaRDD.count());
+
+        /*
         for (Tuple2<ImmutableBytesWritable, Result> test : javaPairRdd.take(10)) //or pairRdd.collect()
         {
             System.out.println(test._2);
 
 
             byte[] jbytes = test._2.getValue(Bytes.toBytes("json"), Bytes.toBytes("data"));
+            netFlow flow = gson.fromJson(new String(jbytes), netFlow.class);
             String key = Bytes.toString(test._2.getRow());
             System.out.println("Key: " + key);
             System.out.println("Value: " + new String(jbytes));
         }
+*/
+       //Dataset<Row> peopleDF = spark.read().json("examples/src/main/resources/people.json");
 
 
 
