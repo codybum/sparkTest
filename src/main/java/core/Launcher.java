@@ -84,8 +84,10 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
                         Result r = entry._2;
                         String keyRow = Bytes.toString(r.getRow());
 
-                        //System.out.println("--------------------Define JavaBean!");
-                        netFlow flow = gson.fromJson(new String(r.getValue(Bytes.toBytes("json"), Bytes.toBytes("data"))), netFlow.class);
+                        System.out.println("--------------------Define JavaBean!");
+                        String json = new String(r.getValue(Bytes.toBytes("json"), Bytes.toBytes("data")));
+                        System.out.println(json);
+                        netFlow flow = gson.fromJson(json, netFlow.class);
                         return new Tuple2<String, netFlow>(keyRow, flow);
                     }
                 });
