@@ -119,8 +119,13 @@ public class netFlow {
     
 	public String getIp_src() {return ip_src;}
 	public String getIp_dst() {return ip_dst;}
-    
-	
+	public String getPort_src() {return port_src;}
+	public String getPort_dst() {return port_dst;}
+	public String getAs_path() {return as_path;}
+	public String getAs_dst() {return as_dst;}
+	public String getAs_src() {return as_src;}
+
+
 	public String toString() {
 		  StringBuilder result = new StringBuilder();
 		  String newLine = System.getProperty("line.separator");

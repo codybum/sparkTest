@@ -72,6 +72,7 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
         JavaPairRDD<ImmutableBytesWritable, Result> javaPairRdd = jsc.newAPIHadoopRDD(hbaseConf, TableInputFormat.class,ImmutableBytesWritable.class, Result.class);
 
 
+
         // in the rowPairRDD the key is hbase's row key, The Row is the hbase's Row data
         JavaPairRDD<String, netFlow> rowPairRDD = javaPairRdd.mapToPair(
                 new PairFunction<Tuple2<ImmutableBytesWritable, Result>, String, netFlow>() {
@@ -89,6 +90,25 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
                     }
                 });
 
+        // in the rowPairRDD the key is hbase's row key, The Row is the hbase's Row data
+        /*
+        JavaPairRDD<String, netASN> rowPairRDD = javaPairRdd.mapToPair(
+                new PairFunction<Tuple2<ImmutableBytesWritable, Result>, String, netASN>() {
+                    @Override
+                    public Tuple2<String, netASN> call(
+                            Tuple2<ImmutableBytesWritable, Result> entry) throws Exception {
+
+                        //System.out.println("--------------------Getting ID!");
+                        Result r = entry._2;
+                        String keyRow = Bytes.toString(r.getRow());
+
+                        //System.out.println("--------------------Define JavaBean!");
+                        netFlow flow = gson.fromJson(new String(r.getValue(Bytes.toBytes("json"), Bytes.toBytes("data"))), netFlow.class);
+                        return new Tuple2<String, netASN>(keyRow, new netASN(flow.as_path, flow.as_dst, flow.as_src));
+                    }
+                });
+
+*/
         System.out.println("--------------------COUNT RDD " + rowPairRDD.count());
         System.out.println("--------------------Create DataFrame!");
         DataFrame schemaRDD = sqlContext.createDataFrame(rowPairRDD.values(), netFlow.class);
