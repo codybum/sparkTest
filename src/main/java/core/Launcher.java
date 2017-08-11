@@ -21,11 +21,12 @@ import org.apache.spark.sql.Row;
 
 public class Launcher {
 
-    private static Gson gson;
+    //private static Gson gson;
+    private static final Gson gson = new Gson();
 	public static void main(String[] args) throws Exception 
 	{
         //gson = new GsonBuilder().create();
-        gson = new Gson();
+        //gson = new Gson();
 
 
 	    /*
