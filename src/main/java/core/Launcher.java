@@ -125,10 +125,8 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
         schemaRDD.printSchema();
         System.out.println("--------------------COUNT Schema " + schemaRDD.count());
 
-        schemaRDD.describe("as_path").show();
-        schemaRDD.describe("as_dst").show();
-        schemaRDD.describe("as_src").show();
-
+        DataFrame df2 = schemaRDD.groupBy("as_path").count();
+        df2.show();
 
         /*
         for (Tuple2<ImmutableBytesWritable, Result> test : javaPairRdd.take(10)) //or pairRdd.collect()
