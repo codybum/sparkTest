@@ -90,11 +90,12 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
                         netFlow flow = null;
                         try {
                             flow = gson.fromJson(json, netFlow.class);
+                            return new Tuple2<String, netFlow>(keyRow, flow);
                         } catch(Exception ex) {
                             System.out.println("Failure to cast json " + json);
                         }
+                        return null;
 
-                        return new Tuple2<String, netFlow>(keyRow, flow);
                     }
                 });
 
