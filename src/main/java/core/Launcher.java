@@ -24,7 +24,9 @@ public class Launcher {
     private static Gson gson;
 	public static void main(String[] args) throws Exception 
 	{
-        gson = new GsonBuilder().create();
+        //gson = new GsonBuilder().create();
+        gson = new Gson();
+
 
 	    /*
 	    Configuration conf = HBaseConfiguration.create();
@@ -87,14 +89,9 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
                         //System.out.println("--------------------Define JavaBean!");
                         String json = new String(r.getValue(Bytes.toBytes("json"), Bytes.toBytes("data")));
                         //System.out.println("*" + json + "*");
-                        netFlow flow = null;
-                        try {
-                            flow = gson.fromJson(json, netFlow.class);
-                            return new Tuple2<String, netFlow>(keyRow, flow);
-                        } catch(Exception ex) {
-                            System.out.println("Failure to cast json " + json);
-                        }
-                        return null;
+
+                        netFlow flow = gson.fromJson(json, netFlow.class);
+                        return new Tuple2<String, netFlow>(keyRow, flow);
 
                     }
                 });
