@@ -25,8 +25,8 @@ JavaRDD<Tuple2<byte[], List<Tuple3<byte[], byte[], byte[]>>>> hbaseRdd = hbaseCo
 System.out.println("Number of Records found : " + hBaseRDD.count())
 	     */
 
-        String logFile = "YOUR_SPARK_HOME/README.md"; // Should be some file on your system
-        SparkConf conf = new SparkConf().setAppName("Simple Application").setMaster("local[*]");
+        String logFile = "test.txt"; // Should be some file on your system
+        SparkConf conf = new SparkConf().setAppName("Simple Application");
 
         JavaSparkContext sc = new JavaSparkContext(conf);
         JavaRDD<String> logData = sc.textFile(logFile).cache();
