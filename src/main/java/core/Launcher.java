@@ -23,7 +23,7 @@ public class Launcher {
 
     //private static Gson gson;
     private static final Gson gson = new Gson();
-	public static void main(String[] args) throws Exception 
+	public static void main(String[] args) throws Exception
 	{
         //gson = new GsonBuilder().create();
         //gson = new Gson();
@@ -92,6 +92,7 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
                         //System.out.println("*" + json + "*");
 
                         netFlow flow = gson.fromJson(json, netFlow.class);
+
                         return new Tuple2<String, netFlow>(keyRow, flow);
 
                     }
@@ -123,6 +124,11 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
         System.out.println("--------------------Loading Schema");
         schemaRDD.printSchema();
         System.out.println("--------------------COUNT Schema " + schemaRDD.count());
+
+        schemaRDD.describe("as_path").show();
+        schemaRDD.describe("as_dst").show();
+        schemaRDD.describe("as_src").show();
+
 
         /*
         for (Tuple2<ImmutableBytesWritable, Result> test : javaPairRdd.take(10)) //or pairRdd.collect()
