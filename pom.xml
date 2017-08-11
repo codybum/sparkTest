@@ -1,0 +1,144 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+<name>sparkbase</name>
+<groupId>sparkhbase</groupId>
+<artifactId>test</artifactId>
+<version>1.0-SNAPSHOT</version>
+
+
+<repositories>
+    <repository>
+        <id>cloudera-repo</id>
+        <name>Cloudera CDH</name>
+        <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+    </repository>
+    <repository>
+        <id>pentaho-releases</id>
+        <url>http://repository.pentaho.org/artifactory/repo/</url>
+    </repository>
+
+</repositories>
+
+
+<dependencies>
+
+    <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core_2.10 -->
+    <dependency>
+        <groupId>org.apache.spark</groupId>
+        <artifactId>spark-core_2.10</artifactId>
+        <version>1.6.0-cdh5.12.0</version>
+    </dependency>
+
+
+    <!-- https://mvnrepository.com/artifact/org.apache.hbase/hbase-spark -->
+    <dependency>
+        <groupId>org.apache.hbase</groupId>
+        <artifactId>hbase-spark</artifactId>
+        <version>1.2.0-cdh5.12.0</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.hbase</groupId>
+        <artifactId>hbase-client</artifactId>
+        <version>1.2.0-cdh5.12.0</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-common</artifactId>
+        <version>2.6.0-cdh5.12.0</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>18.0</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.3.1</version>
+    </dependency>
+
+
+</dependencies>
+<build>
+
+    <plugins>
+
+        <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+                <archive>
+                    <manifest>
+                        <mainClass>core.Launcher</mainClass>
+                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                    </manifest>
+                </archive>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>make-assembly</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.2</version>
+            <configuration>
+                <source>1.7</source>
+                <target>1.7</target>
+            </configuration>
+        </plugin>
+
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                    <configuration>
+                        <shadedArtifactAttached>true</shadedArtifactAttached>
+                        <shadedClassifierName>allinone</shadedClassifierName>
+                        <artifactSet>
+                            <includes>
+                                <include>*:*</include>
+                            </includes>
+                        </artifactSet>
+                        <transformers>
+                            <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                <resource>reference.conf</resource>
+                            </transformer>
+                            <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <manifestEntries>
+                                    <Main-Class>akka.Main</Main-Class>
+                                </manifestEntries>
+                            </transformer>
+                        </transformers>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+
+    </plugins>
+
+
+
+</build>
+</project>
