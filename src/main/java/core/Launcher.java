@@ -46,6 +46,10 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
         //System.out.println("Number of Records found : " + hBaseRDD.count())
 
         Configuration hbaseConf = HBaseConfiguration.create();
+        hbaseConf.set("hbase.zookeeper.quorum", "bdm00.uky.edu");  // Here we are running zookeeper locally
+        hbaseConf.set("hbase.cluster.distributed", "true");  // Here we are running zookeeper locally
+        hbaseConf.set("hbase.rootdir", "hdfs://bdm00.uky.edu:8020/hbase");  // Here we are running zookeeper locally
+
         hbaseConf.set(TableInputFormat.INPUT_TABLE, "netflow");
         JavaHBaseContext hbaseContext = new JavaHBaseContext(jsc, hbaseConf);
 
