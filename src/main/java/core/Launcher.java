@@ -7,6 +7,7 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.TableInputFormat;
 import org.apache.hadoop.hbase.spark.JavaHBaseContext;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.spark.api.java.*;
 import org.apache.spark.SparkConf;
 import scala.Tuple2;
@@ -59,7 +60,7 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
         for (Tuple2<ImmutableBytesWritable, Result> test : javaPairRdd.take(10)) //or pairRdd.collect()
         {
             System.out.println(test._2);
-            byte[] jbytes = test._2.current().getValueArray();
+            byte[] jbytes = test._2.getValue(Bytes.toBytes("json"), Bytes.toBytes("data"));
             System.out.println(new String(jbytes));
         }
 
