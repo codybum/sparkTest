@@ -121,12 +121,13 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
         System.out.println("--------------------Create DataFrame!");
         //DataSet<Row> ssd = sqlContext.createDataset(rowPairRDD.values(), netFlow.class);
         DataFrame schemaRDD = sqlContext.createDataFrame(rowPairRDD.values(), netFlow.class);
-        System.out.println("--------------------Loading Schema");
-        schemaRDD.printSchema();
-        System.out.println("--------------------COUNT Schema " + schemaRDD.count());
+        //System.out.println("--------------------Loading Schema");
+        //schemaRDD.printSchema();
+        //System.out.println("--------------------COUNT Schema " + schemaRDD.count());
 
         DataFrame df2 = schemaRDD.groupBy("as_path").count();
-        df2.show();
+        //df2.show();
+        df2.write().format("com.databricks.spark.csv").save("test2.csv");
 
         /*
         for (Tuple2<ImmutableBytesWritable, Result> test : javaPairRdd.take(10)) //or pairRdd.collect()
