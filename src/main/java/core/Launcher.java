@@ -125,14 +125,22 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
         //schemaRDD.printSchema();
         //System.out.println("--------------------COUNT Schema " + schemaRDD.count());
 
+        DataFrame df = schemaRDD.groupBy("as_src", "as_dst").count();
+        //df2.show();
+        df.coalesce(1).
+                write().
+                format("com.databricks.spark.csv").
+                option("header", "true").
+                save("as_pair.csv");
+
         DataFrame df2 = schemaRDD.groupBy("as_path").count();
         //df2.show();
-        //df2.write().format("com.databricks.spark.csv").save("test2.csv");
         df2.coalesce(1).
                 write().
                 format("com.databricks.spark.csv").
                 option("header", "true").
-                save("myfile.csv");
+                save("as_path.csv");
+
         /*
         for (Tuple2<ImmutableBytesWritable, Result> test : javaPairRdd.take(10)) //or pairRdd.collect()
         {
