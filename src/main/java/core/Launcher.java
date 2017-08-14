@@ -127,8 +127,12 @@ System.out.println("Number of Records found : " + hBaseRDD.count())
 
         DataFrame df2 = schemaRDD.groupBy("as_path").count();
         //df2.show();
-        df2.write().format("com.databricks.spark.csv").save("test2.csv");
-
+        //df2.write().format("com.databricks.spark.csv").save("test2.csv");
+        df2.coalesce(1).
+                write().
+                format("com.databricks.spark.csv").
+                option("header", "true").
+                save("myfile.csv");
         /*
         for (Tuple2<ImmutableBytesWritable, Result> test : javaPairRdd.take(10)) //or pairRdd.collect()
         {
